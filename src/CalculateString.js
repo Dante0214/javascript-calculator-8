@@ -1,3 +1,5 @@
+import { ERROR_MESSAGES } from "./constants.js";
+
 const calculateString = (text) => {
   const SPLIT_PREFIX = "//";
   const SPLIT_SUFFIX = "\\n";
@@ -11,10 +13,16 @@ const calculateString = (text) => {
   //2. 구분자 처리(커스텀 구분자로 변경하는것이 아닌 기본 구분자에 커스텀 구분자 추가 처리)
   if (text.startsWith(SPLIT_PREFIX)) {
     const delimiterEndIdx = text.indexOf(SPLIT_SUFFIX);
+    if (delimiterEndIdx === -1) {
+      throw new Error(ERROR_MESSAGES.INVALID_CUSTOM_DELIMITER_FORMAT);
+    }
     const customDelimiter = text.substring(
       SPLIT_PREFIX.length,
       delimiterEndIdx
     );
+    if (customDelimiter === "") {
+      throw new Error(ERROR_MESSAGES.BLANK_CUSTOM_DELIMITER);
+    }
     numbersPart = text.substring(delimiterEndIdx + SPLIT_SUFFIX.length);
     numbersPart = numbersPart.replaceAll(customDelimiter, ",");
   }
@@ -23,10 +31,10 @@ const calculateString = (text) => {
   const numbers = numbersPart.split(",").map((str) => {
     const number = Number(str);
     if (isNaN(number)) {
-      throw new Error("[ERROR] 유효한 숫자가 아닙니다.");
+      throw new Error(ERROR_MESSAGES.INVALID_NUMBER);
     }
     if (number < 0) {
-      throw new Error("[ERROR] 음수는 허용되지 않습니다.");
+      throw new Error(ERROR_MESSAGES.NEGATIVE_NUMBER);
     }
     return number;
   });
